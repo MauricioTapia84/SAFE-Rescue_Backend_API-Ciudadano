@@ -26,7 +26,7 @@ public class Credencial {
     private int intentosFallidos = 0;
 
     @Column(nullable = false)
-    private boolean activo = true;
+    private boolean activo;
 
 
 }

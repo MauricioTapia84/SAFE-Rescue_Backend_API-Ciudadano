@@ -59,7 +59,6 @@ public class CiudadanoController {
 
     }
 
-
     @PutMapping("/{id}")
     public ResponseEntity<String> actualizarCiudadano(@PathVariable long id, @RequestBody Ciudadano ciudadano) {
         try {
@@ -80,8 +79,19 @@ public class CiudadanoController {
     @DeleteMapping("/{id}")
     public ResponseEntity<String> eliminarCiudadano(@PathVariable long id) {
 
-        ciudadanoService.delete(id);
-        return ResponseEntity.ok("Ciudadano eliminado con éxito.");
+        try {
+            ciudadanoService.delete(id);
+            return ResponseEntity.ok("Ciudadano eliminado con éxito.");
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("Ciudadano no encontrado");
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error interno del servidor.");
+        }
     }
 
     @PostMapping("/{ciudadanoId}/asignar-credencial/{credencialId}")
@@ -93,4 +103,5 @@ public class CiudadanoController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     }
+
 }

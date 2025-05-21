@@ -126,6 +126,9 @@ public class CiudadanoService {
 
     public void delete(long id){
         try {
+            if (!ciudadanoRepository.existsById(id)) {
+                throw new NoSuchElementException("Ciudadano no encontrado");
+            }
             ciudadanoRepository.deleteById(id);
 
         } catch (Exception e) {
