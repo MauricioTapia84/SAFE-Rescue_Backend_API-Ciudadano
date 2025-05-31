@@ -1,5 +1,6 @@
 package com.SAFE_Rescue.API_Ciudadano.service;
 
+import com.SAFE_Rescue.API_Ciudadano.modelo.Ciudadano;
 import com.SAFE_Rescue.API_Ciudadano.repository.CredencialRepository;
 import com.SAFE_Rescue.API_Ciudadano.modelo.Credencial;
 import jakarta.persistence.EntityNotFoundException;
@@ -94,6 +95,42 @@ public class CredencialService {
         }
     }
 
+    /**
+     * Valida la credencial
+     * @param credencial credencial
+     * @throws IllegalArgumentException Si la credencial no cumple con las reglas de validación
+     */
+    public void validarCredencial(Credencial credencial) {
+
+
+        if (credencial.getIntentosFallidos() >= 0) {
+            throw new IllegalArgumentException("La Cantidad debe ser un número positivo");
+        }
+
+        if (credencial.getContrasenia() != null) {
+            if (credencial.getContrasenia().length() > 16) {
+                throw new RuntimeException("El valor Contrasenia excede máximo de caracteres (16)");
+            }
+        } else {
+            throw new IllegalArgumentException("La Contrasenia del ciudadano es requerido");
+        }
+
+        if (credencial.getCorreo() != null) {
+            if (credencial.getCorreo().length() > 80) {
+                throw new RuntimeException("El valor de Correo excede máximo de caracteres (80)");
+            }
+        } else {
+            throw new IllegalArgumentException("El Correo es requerido");
+        }
+    }
+
+    // MÉTODOS DE VERIFICACION DE CREDENCIALES PARA LOGIN
+
+    /**
+     * Verifica la contraseña al iniciar sesión
+     * @param correo correo del ciudadano
+     * @param contrasenia contrasenia del ciudadano
+     */
     public boolean verificarCredenciales(String correo, String contrasenia) {
         Credencial credencial = credencialRepository.findByCorreo(correo);
         if (credencial != null) {

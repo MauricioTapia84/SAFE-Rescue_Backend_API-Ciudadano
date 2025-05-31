@@ -11,13 +11,25 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.NoSuchElementException;
 
+/**
+ * Controlador REST para la gestión de credenciales ciudadanas
+ * Proporciona endpoints para operaciones CRUD y gestión de relaciones de credenciales ciudadanas
+ */
 @RestController
 @RequestMapping("/api-ciudadano/v1/credenciales")
 public class CredencialController {
 
+    // SERVICIOS INYECTADOS
+
     @Autowired
     private CredencialService credencialService;
 
+    // OPERACIONES CRUD BÁSICAS
+
+    /**
+     * Obtiene todos las credenciales registradas en el sistema.
+     * @return ResponseEntity con lista de credenciales o estado NO_CONTENT si no hay registros
+     */
     @GetMapping
     public ResponseEntity<List<Credencial>> listar(){
 
@@ -28,6 +40,28 @@ public class CredencialController {
         return ResponseEntity.ok(credenciales);
     }
 
+    /**
+     * Busca un Credencial por su ID.
+     * @param id ID del Credencial a buscar
+     * @return ResponseEntity con el Credencial encontrado o mensaje de error
+     */
+    @GetMapping("/{id}")
+    public ResponseEntity<?> buscarCredencial(@PathVariable long id) {
+        Credencial credencial;
+
+        try {
+            credencial = credencialService.findByID(id);
+        }catch(NoSuchElementException e){
+            return new ResponseEntity<String>("Credencial no encontrada", HttpStatus.NOT_FOUND);
+        }
+        return ResponseEntity.ok(credencial);
+    }
+
+    /**
+     * Crea una nueva Credencial
+     * @param credencial Datos de la Credencial a crear
+     * @return ResponseEntity con mensaje de confirmación o error
+     */
     @PostMapping
     public ResponseEntity<String> agregarCredencial(@RequestBody Credencial credencial) {
         try {
@@ -40,21 +74,12 @@ public class CredencialController {
         }
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<?> buscarCredencial(@PathVariable long id) {
-        Credencial credencial;
-
-        try {
-            credencial = credencialService.findByID(id);
-        }catch(NoSuchElementException e){
-            return new ResponseEntity<String>("Credencial no encontrada", HttpStatus.NOT_FOUND);
-        }
-
-        return ResponseEntity.ok(credencial);
-
-    }
-
-
+    /**
+     * Actualiza una Credencial existente.
+     * @param id ID de la Credencial a actualizar
+     * @param credencial Datos actualizados de la Credencial
+     * @return ResponseEntity con mensaje de confirmación o error
+     */
     @PutMapping("/{id}")
     public ResponseEntity<String> actualizarCredencial(@PathVariable long id, @RequestBody Credencial credencial) {
         try {
@@ -72,13 +97,34 @@ public class CredencialController {
         }
     }
 
+    /**
+     * Elimina un Ciudadano del sistema.
+     * @param id ID del Ciudadano a eliminar
+     * @return ResponseEntity con mensaje de confirmación
+     */
     @DeleteMapping("/{id}")
     public ResponseEntity<String> eliminarCredencial(@PathVariable long id) {
 
-        credencialService.delete(id);
-        return ResponseEntity.ok("Credencial eliminada con éxito.");
+        try {
+            credencialService.delete(id);
+            return ResponseEntity.ok("Credencial eliminada con éxito.");
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("Credencial no encontrada");
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error interno del servidor.");
+        }
     }
 
+    /**
+     * Permite iniciar sesion
+     * @param login credenciales de inicio sesion
+     * @return ResponseEntity con mensaje de confirmación o error y aumenta la cantidad de intentos fallidos
+     */
     @PostMapping("/login")
     public ResponseEntity<String> login(@RequestBody Login login) {
         boolean isAuthenticated = credencialService.verificarCredenciales(login.getCorreo(), login.getContrasenia());
