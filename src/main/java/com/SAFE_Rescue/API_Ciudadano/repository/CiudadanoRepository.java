@@ -5,7 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 /**
- * Repositorio para la gestión de Recursos
+ * Repositorio para la gestión de credenciales
  * Maneja operaciones CRUD desde la base de datos usando Jakarta
  * Maneja validadores para encontrar el run y telefono
  */

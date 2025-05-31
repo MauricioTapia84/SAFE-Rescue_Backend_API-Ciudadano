@@ -17,7 +17,7 @@ import lombok.NoArgsConstructor;
 public class Credencial {
 
     /**
-     * Identificador único del recurso
+     * Identificador único del credencial
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
