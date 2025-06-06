@@ -186,7 +186,7 @@ public class CiudadanoService {
     public void validarCiudadano(Ciudadano ciudadano) {
 
 
-        if (ciudadano.getRun() >= 0) {
+        if (ciudadano.getRun() < 0) {
             throw new IllegalArgumentException("La Cantidad debe ser un número positivo");
         } else {
             if (String.valueOf(ciudadano.getRun()).length() > 8) {
@@ -230,7 +230,7 @@ public class CiudadanoService {
             throw new IllegalArgumentException("El a_paterno  del ciudadano es requerido");
         }
 
-        if (ciudadano.getTelefono() >= 0) {
+        if (ciudadano.getTelefono() < 0) {
             throw new IllegalArgumentException("La Cantidad debe ser un número positivo");
         } else {
             if (String.valueOf(ciudadano.getTelefono()).length()> 9) {
